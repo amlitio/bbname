@@ -5,18 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Baby Name Picker</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <script>
+    function fetchName(gender) {
+      fetch('/name/' + gender)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('nameDisplay').textContent = data.name;
+        });
+    }
+
+    function bookmarkName() {
+      const name = document.getElementById('nameDisplay').textContent;
+      fetch('/bookmark', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        const bookmarks = document.getElementById('bookmarks');
+        bookmarks.innerHTML += `<li>${data.name}</li>`;
+      });
+    }
+  </script>
 </head>
 <body class="bg-gray-800 text-white">
   <div class="container mx-auto px-4 py-10">
-    <h1 class="text-4xl font-bold text-center mb-6">Random Baby Name Picker</h1>
+    <h1 class="text-4xl font-bold text-center mb-6">Baby Name Picker</h1>
     <div class="text-center">
-      <button id="generateName" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Generate Name
+      <button onclick="fetchName('boy')" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Get Boy Name
+      </button>
+      <button onclick="fetchName('girl')" class="bg-pink-500 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded">
+        Get Girl Name
       </button>
     </div>
-    <div id="nameDisplay" class="mt-6 text-center text-2xl"></div>
-    <div id="bookmarks" class="mt-6"></div>
+    <div class="mt-6 text-center">
+      <p id="nameDisplay" class="text-2xl">Click a button to get a name!</p>
+      <button onclick="bookmarkName()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">
+        Bookmark Name
+      </button>
+    </div>
+    <div class="mt-6">
+      <h2 class="text-2xl font-bold">Bookmarked Names:</h2>
+      <ul id="bookmarks" class="list-disc ml-5">
+        <!-- Bookmarked names will appear here -->
+      </ul>
+    </div>
   </div>
-  <script src="/js/script.js"></script>
 </body>
 </html>
