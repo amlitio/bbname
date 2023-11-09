@@ -2,9 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
-// Vercel will set the port via an environment variable
-const port = process.env.PORT || 3000;
-
 // Serve static files from the "public" directory
 app.use(express.static('public'));
 
@@ -41,7 +38,17 @@ app.post('/bookmark', (req, res) => {
   res.json({ name: name });
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+// Error handling for 404 Not Found
+app.use((req, res, next) => {
+  res.status(404).render('error', { error: 'Page not found' });
 });
+
+// Start the server only if running locally
+if (!process.env.VERCEL) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+module.exports = app;
